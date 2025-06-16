@@ -1,0 +1,121 @@
+@startuml AlquilaFacil Edge Node - Class Diagram
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam handwritten false
+skinparam monochrome false
+skinparam shadowing false
+
+' === Locals Monitoring Bounded Context ===
+package "Locals Monitoring Bounded Context" #DEEAFF {
+
+  ' --- Domain Layer ---
+  package "domain" #E2F0FF {
+
+    class ReadingsModel {
+      id: int
+      sensor_id: int
+      sensor_type: str
+      value: float
+      unit: str
+      timestamp: datetime
+    }
+
+    class ReadingSensorRequestSchema {
+      type: str
+      value: float
+      unit: str
+      timestamp: datetime
+    }
+
+    class SensorReadingResponseSchema {
+      local_id: int
+      sensor_id: int
+      readings: List[ReadingSensorRequestSchema]
+    }
+
+    class SensorLimitsRequestSchema {
+      maxCapacity: int
+      maxNoiseLevel: int
+      smokeDetectionEnabled: bool
+      restrictedArea: str
+    }
+  }
+
+  ' --- Application Layer ---
+  package "application.services" #D5E7FF {
+    class ReadingsService {
+      +create_reading(payload: SensorReadingResponseSchema): dict
+    }
+  }
+
+  ' --- Infrastructure Layer ---
+  package "infrastructure.repositories" #C9DFFF {
+    class ReadingsRepository {
+      +save_reading(sensor_id: int, reading_list: List[ReadingSensorRequestSchema])
+    }
+  }
+
+  ' --- Interface Layer ---
+  package "interface.routers" #BCCEFF {
+    class readings_route {
+      +receive_readings(payload: SensorReadingResponseSchema)
+    }
+  }
+}
+
+' === Infrastructure - External Services ===
+package "Infrastructure - External" #FFFACD {
+  class principal_service_cloud {
+    +get_token_from_backend(email: str, password: str): str
+    +get_limits_from_backend(local_id: int): SensorLimitsRequestSchema
+    +report_incidents_to_backend(incidents: List[dict])
+  }
+}
+
+' === Shared Components ===
+package "Shared Components" #E8FFE8 {
+  package "config" #D1FFD1 {
+    class Settings {
+      DATABASE_URL: str
+      DATABASE_SERVER: str
+      DATABASE_USERNAME: str
+      DATABASE_PASSWORD: str
+      BACKEND_HOST: str
+      ...
+    }
+  }
+
+  package "infrastructure.database" #D1FFD1 {
+    class DatabaseConnection {
+      +session_factory
+      +init_models()
+    }
+  }
+}
+
+' === Interface (HTTP Layer) ===
+interface FastAPI {
+  +POST /edge/receive-readings
+}
+
+' === Relaciones ===
+
+' Locals Monitoring
+SensorReadingResponseSchema --> ReadingSensorRequestSchema : contains
+ReadingsService --> SensorReadingResponseSchema
+ReadingsService --> SensorLimitsRequestSchema
+ReadingsService --> ReadingsRepository
+ReadingsService ..> principal_service_cloud : uses
+readings_route --> ReadingsService : uses
+FastAPI --> readings_route : invokes
+ReadingsRepository --> ReadingsModel : creates
+ReadingsRepository --> ReadingSensorRequestSchema : reads
+
+' Shared
+DatabaseConnection --> Settings : configures
+ReadingsRepository --> DatabaseConnection : uses
+principal_service_cloud --> Settings : uses
+
+@enduml
