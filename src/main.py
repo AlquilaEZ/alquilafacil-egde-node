@@ -1,7 +1,7 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .domains.sensor_readings.router.readings_route import readings_route
+from .locals_monitoring.interface.routers.readings_route import reading_route
 app = FastAPI()
 
 
@@ -17,4 +17,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(readings_route, prefix="/api/v1/edge-node", tags=["Sensor Readings"])
+app.include_router(reading_route, prefix="/api/v1/edge-node", tags=["Sensor Readings"])
