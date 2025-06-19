@@ -18,8 +18,9 @@ class ReadingRepository:
             Reading: An instance of Reading containing the saved data.
         """
         reading_model = ReadingModel.create(
-            type=reading.type,
-            value=reading.value,
+            local_id= 2,
+            type=reading.sensor_type,
+            value=reading.message,
             timestamp=reading.timestamp
         )
         return Reading(
