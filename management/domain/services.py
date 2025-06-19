@@ -5,7 +5,7 @@ class ReadingService:
     """Service for managing reading-related operations."""
 
     @staticmethod
-    def create_reading(local_id: int, sensor_type: str, message: str, timestamp: str) -> dict:
+    def create_reading(local_id: int, sensor_type: str, message: str, timestamp: str) -> Reading:
         """
         Create a smoke sensor reading.
 

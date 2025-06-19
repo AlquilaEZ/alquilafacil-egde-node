@@ -1,7 +1,7 @@
 import time
 import httpx
 
-from shared.config.settings import settings
+from shared.configuration.settings import settings
 from iam.interfaces.resources import TokenResource
 
 class AuthorizationApplicationService:
@@ -10,9 +10,9 @@ class AuthorizationApplicationService:
             "value": None,
             "expires_at": 0  # timestamp
         }
-        self.TOKEN_EXPIRATION_SECONDS = 16200  # 15 minutos
+        self.TOKEN_EXPIRATION_SECONDS = settings.TOKEN_EXPIRATION_SECONDS
 
-    async def sign_in(self, email: str, password: str) -> str:
+    async def sign_in(self) -> str:
 
         if self.token_cache["value"] and time.time() < self.token_cache["expires_at"]:
             return self.token_cache["value"]
@@ -20,8 +20,8 @@ class AuthorizationApplicationService:
         async with httpx.AsyncClient() as client:
             try:
                 response = await client.post(
-                    f"{settings.BACKEND_HOST}/authentication/sign-in",
-                    json={"email": email, "password": password}
+                    f"{settings.BACKEND_API_BASE_URL}/authentication/sign-in",
+                    json={"email": settings.AUTHENTICATION_EMAIL, "password": settings.AUTHENTICATION_PASSWORD}
                 )
                 print("✅ Sign-in request sent to backend:", response.status_code)
                 response.raise_for_status()

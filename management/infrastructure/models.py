@@ -10,7 +10,7 @@ class Reading(Model):
   local_id = IntegerField(null=False)
   sensor_type = CharField(max_length=50, null=False)
   message = CharField(max_length=255, null=False)
-  timestamp = DateTimeField(null=False)
+  timestamp = CharField(max_length=255, null=False)
 
   class Meta:
     """

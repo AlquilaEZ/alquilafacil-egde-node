@@ -1,6 +1,6 @@
 import httpx
 
-from shared.config.settings import settings
+from shared.configuration.settings import settings
 from iam.application.services import AuthorizationApplicationService
 from locals.domain.entities import Local
 from locals.domain.services import LocalService
@@ -70,9 +70,9 @@ class LocalApplicationService:
         """
         async with httpx.AsyncClient() as client:
             try:
-                token = await self.authorization_service.sign_in("admin@gmail.com", "Admin@123")
+                token = await self.authorization_service.sign_in()
                 headers = {"Authorization": f"Bearer {token}"}
-                response = await client.get(f"{settings.BACKEND_HOST}/locals/{local_id}", headers=headers)
+                response = await client.get(f"{settings.BACKEND_API_BASE_URL}/locals/{local_id}", headers=headers)
                 response.raise_for_status()
                 local_response = response.json()
                 if not local_response or "id" not in local_response:

@@ -1,18 +1,24 @@
 from pydantic import BaseModel
 
-class SmokeSensorReadingResource(BaseModel):
+class CreateSmokeSensorReadingResource(BaseModel):
     device_id: int
     message: str
-    timestamp: str
 
-
-class NoiseSensorReadingResource(BaseModel):
+class CreateNoiseSensorReadingResource(BaseModel):
     device_id: int
     message: str
-    timestamp: str
 
 
-class CapacitySensorReadingResource(BaseModel):
+class CreateCapacitySensorReadingResource(BaseModel):
     device_id: int
     message: str
-    timestamp: str
+
+class CreateRestrictedAreaSensorReadingResource(BaseModel):
+    device_id: int
+    message: str
+
+class ReadingResource(BaseModel):
+    LocalId: int
+    SensorTypeId: int
+    Message: str
+    Timestamp: str
