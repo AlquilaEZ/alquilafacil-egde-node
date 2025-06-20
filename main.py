@@ -18,7 +18,6 @@ async def lifespan():
 
 app = FastAPI(lifespan=lifespan)
 
-app = FastAPI()
 
 origins = [
     "http://localhost:3000",
