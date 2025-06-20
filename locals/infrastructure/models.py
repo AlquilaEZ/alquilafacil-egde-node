@@ -8,6 +8,7 @@ class Local(Model):
   """
   id = AutoField()
   capacity = IntegerField(null=False)
+  current_capacity = IntegerField(null=False, default=0)
 
   class Meta:
     """

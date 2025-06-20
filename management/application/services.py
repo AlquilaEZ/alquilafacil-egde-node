@@ -106,16 +106,27 @@ class ReadingApplicationService:
             raise ValueError("Local not found. Please create a local first.")
         local_id = local.id
 
-        local = self.local_repository.get_local()
-        if not local:
-            raise ValueError("Local not found. Please create a local first.")
-
-        local_id = local.id
         timestamp = self.get_current_iso_timestamp()
+
+        new_capacity = 0
+
+        if(resource.message == "Se detecto la entrada de una persona"):
+            current_capacity = self.local_repository.get_current_capacity()
+            if current_capacity is None:
+                raise ValueError("Current capacity not found for the local.")
+            new_capacity = current_capacity + 1
+            
+        else:
+            current_capacity = self.local_repository.get_current_capacity()
+            if current_capacity is None:
+                raise ValueError("Current capacity not found for the local.")
+            new_capacity = current_capacity - 1
+
+        self.local_repository.update_capacity(new_capacity)
         sensor_type_id, sensor_type_name = SENSOR_TYPES["Capacity"]
 
-        await self.send_reading_to_backend(local_id, sensor_type_id, resource.message, timestamp)
-        reading = self.reading_service.create_reading(local_id, sensor_type_name, resource.message, timestamp)
+        await self.send_reading_to_backend(local_id, sensor_type_id, str(new_capacity), timestamp)
+        reading = self.reading_service.create_reading(local_id, sensor_type_name, str(new_capacity), timestamp)
         return self.reading_repository.save(reading)
     
     
