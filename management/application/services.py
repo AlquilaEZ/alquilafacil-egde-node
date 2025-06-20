@@ -83,7 +83,7 @@ class ReadingApplicationService:
 
         local_id = local.id
         timestamp = self.get_current_iso_timestamp()
-        sensor_type_id, sensor_type_name = SENSOR_TYPES["Smoke"]
+        sensor_type_id, sensor_type_name = SENSOR_TYPES["Noise"]
 
         await self.send_reading_to_backend(local_id, sensor_type_id, resource.message, timestamp)
         reading = self.reading_service.create_reading(local_id, sensor_type_name, resource.message, timestamp)
