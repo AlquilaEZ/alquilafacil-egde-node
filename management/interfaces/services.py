@@ -37,7 +37,7 @@ async def create_restricted_area_reading(resource: CreateRestrictedAreaSensorRea
     Endpoint to create a restricted area reading.
     This endpoint processes a restricted area reading and reports to the backend if necessary.
     """
-    return await reading_service.create_capacity_reading(resource)
+    return await reading_service.create_restricted_area_reading(resource)
 
 @reading_api.get("/edge/readings/local-id/{local_id}")
 async def get_readings_by_local_id(local_id: int):
