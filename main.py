@@ -10,7 +10,7 @@ from contextlib import asynccontextmanager
 local_service = LocalApplicationService()
 
 @asynccontextmanager
-async def lifespan():
+async def lifespan(app: FastAPI):
     # Initialize resources at startup
     init_db()
     await local_service.create_local(1)
