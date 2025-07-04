@@ -7,6 +7,7 @@ from locals.infrastructure.repositories import LocalRepository
 from management.domain.valueobjects import SENSOR_TYPES
 from management.domain.services import ReadingService
 from management.infrastructure.repositories import ReadingRepository
+from management.interfaces.websockets import manager
 from management.interfaces.resources import CreateSmokeSensorReadingResource, CreateNoiseSensorReadingResource, CreateCapacitySensorReadingResource, CreateRestrictedAreaSensorReadingResource, ReadingResource
 
 
@@ -62,6 +63,7 @@ class ReadingApplicationService:
         sensor_type_id, sensor_type_name = SENSOR_TYPES["Smoke"]
 
         await self.send_reading_to_backend(local_id, sensor_type_id, resource.message, timestamp)
+        await manager.send_message(f"NUEVA LECTURA DE HUMO: {resource.message}")
         reading = self.reading_service.create_reading(local_id, sensor_type_name, resource.message, timestamp)
 
         return self.reading_repository.save(reading)
@@ -86,6 +88,7 @@ class ReadingApplicationService:
         sensor_type_id, sensor_type_name = SENSOR_TYPES["Noise"]
 
         await self.send_reading_to_backend(local_id, sensor_type_id, resource.message, timestamp)
+        await manager.send_message(f"NUEVA LECTURA DE RUIDO: {resource.message}")
         reading = self.reading_service.create_reading(local_id, sensor_type_name, resource.message, timestamp)
 
         return self.reading_repository.save(reading)
@@ -126,6 +129,10 @@ class ReadingApplicationService:
         sensor_type_id, sensor_type_name = SENSOR_TYPES["Capacity"]
 
         await self.send_reading_to_backend(local_id, sensor_type_id, str(new_capacity), timestamp)
+        if (new_capacity > local.capacity):
+            await manager.send_message(f"NUEVA LECTURA DE CAPACIDAD: Capacidad excedida: {new_capacity}/{local.capacity} personas")
+        else:
+            await manager.send_message(f"NUEVA LECTURA DE CAPACIDAD: {new_capacity} personas en el local")
         reading = self.reading_service.create_reading(local_id, sensor_type_name, str(new_capacity), timestamp)
         return self.reading_repository.save(reading)
     
@@ -149,6 +156,7 @@ class ReadingApplicationService:
         sensor_type_id, sensor_type_name = SENSOR_TYPES["RestrictedArea"]
 
         await self.send_reading_to_backend(local_id, sensor_type_id, resource.message, timestamp)
+        await manager.send_message(f"NUEVA LECTURA DE ZONA RESTRINGIDA: {resource.message}")
         reading = self.reading_service.create_reading(local_id, sensor_type_name, resource.message, timestamp)
         return self.reading_repository.save(reading)
     

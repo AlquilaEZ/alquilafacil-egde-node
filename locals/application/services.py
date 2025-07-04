@@ -20,7 +20,7 @@ class LocalApplicationService:
         self.local_repository = LocalRepository()
         self.local_service = LocalService()
 
-    async def create_local(self, local_id: int) -> Local:
+    async def create_local(self) -> Local:
         """
         Creates a new local if it does not already exist.
 
@@ -33,6 +33,7 @@ class LocalApplicationService:
         Raises:
             ValueError: If the local cannot be created or the API call fails.
         """
+        local_id = settings.LOCAL_ID
 
         current_local = self.local_repository.get_local()
 
